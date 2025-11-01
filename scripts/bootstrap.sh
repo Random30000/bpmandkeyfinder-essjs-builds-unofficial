@@ -1,8 +1,14 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-REF="${ESSENTIA_JS_REF:-v22.08}"
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+
+[ -f "$ROOT/toolchain.env" ] && . "$ROOT/toolchain.env"
+
+: "${ESSENTIA_JS_REF:=v22.08}"
+: "${EMSDK_VERSION:=3.1.58}"
+
+REF="$ESSENTIA_JS_REF"
 
 if [[ ! -d "$ROOT/vendor/essentia.js/.git" ]]; then
   echo "[bootstrap] fetching upstream @ $REF"

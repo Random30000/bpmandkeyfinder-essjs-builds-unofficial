@@ -27,13 +27,17 @@ jobs:
       - name: Set upstream ref fallback
         run: echo "ESSENTIA_JS_REF=${{ vars.ESSENTIA_JS_REF || 'v22.08' }}" >> $GITHUB_ENV
 
+      - name: Make scripts executable
+        run: chmod +x scripts/*.sh
+
       - name: Bootstrap (fetch + build min)
         run: ./scripts/bootstrap.sh
 
-      - name: Install deps & Test
-        run: |
-          npm ci
-          npm test
+      - name: Install deps
+        run: npm ci || npm i --no-audit --no-fund
+
+      - name: Test
+        run: npm test
 
       - name: Build full
         run: ./scripts/build.sh full
