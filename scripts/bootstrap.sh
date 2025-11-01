@@ -1,9 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+ROOT="$(cd "$(dirname "$0")/.."; pwd)"
 
-[ -f "$ROOT/toolchain.env" ] && . "$ROOT/toolchain.env"
+if [ -f "$ROOT/toolchain.env" ]; then
+  . "$ROOT/toolchain.env"
+fi
 
 : "${ESSENTIA_JS_REF:=v22.08}"
 : "${EMSDK_VERSION:=3.1.58}"
