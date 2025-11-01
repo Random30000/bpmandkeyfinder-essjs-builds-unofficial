@@ -1,0 +1,38 @@
+{
+  "name": "@bpmandkeyfinder/essentia-wasm-builds",
+  "version": "0.1.0",
+  "description": "Reproducible Essentia.js WebAssembly builds with BPM/Key focused bundles.",
+  "license": "AGPL-3.0-only",
+  "type": "module",
+  "scripts": {
+    "setup:local": "scripts/setup-local.sh",
+    "fetch:upstream": "scripts/fetch-upstream.sh",
+    "build": "scripts/build.sh full",
+    "build:min": "scripts/build.sh min",
+    "build:all": "npm run build && npm run build:min",
+    "hash": "node tools/hash.js",
+    "size": "node tools/size-report.js",
+    "compare:hash": "node tools/compare-hash.js dist/full dist/min",
+    "example:browser": "http-server . -c-1 -p 4173",
+    "example:node": "node examples/node/index.mjs",
+    "pretest": "./scripts/bootstrap.sh",
+    "test": "vitest run --silent"
+  },
+  "files": [
+    "dist/**/*",
+    "README.md",
+    "LICENSE",
+    "NOTICE",
+    "build-info.json"
+  ],
+  "exports": {
+    ".": "./dist/essentia-wasm.module.js"
+  },
+  "dependencies": {
+    "node-wav": "^0.0.2"
+  },
+  "devDependencies": {
+    "http-server": "^14.1.1",
+    "vitest": "^1.6.0"
+  }
+}

@@ -1,0 +1,23 @@
+Unofficial Essentia.js WebAssembly builds
+========================================
+
+This repository packages automated builds of Essentia.js (the WebAssembly
+bindings for the Essentia C++ audio analysis library) for convenience. The
+underlying project is maintained by the Music Technology Group at Universitat
+Pompeu Fabra and is available at:
+
+  https://github.com/MTG/essentia.js
+
+All source code and binary artifacts in this repository remain licensed under
+the GNU Affero General Public License, version 3. See LICENSE for the full
+terms. Any commercial licensing options must be negotiated with the upstream
+project.
+
+Upstream attributions
+---------------------
+
+* Essentia.js (AGPL-3.0) — JavaScript/WebAssembly bindings for Essentia.
+* Essentia (AGPL-3.0) — the underlying C++ audio analysis library.
+
+The exact upstream commit, build tooling, and environment information for each
+artifact is recorded in build-info.json.
