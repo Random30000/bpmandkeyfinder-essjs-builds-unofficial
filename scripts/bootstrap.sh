@@ -5,7 +5,7 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 
 [ -f "$ROOT/toolchain.env" ] && . "$ROOT/toolchain.env"
 
-: "${ESSENTIA_JS_REF:=v22.08}"
+: "${ESSENTIA_JS_REF:=main}"
 : "${EMSDK_VERSION:=3.1.58}"
 
 REF="$ESSENTIA_JS_REF"
