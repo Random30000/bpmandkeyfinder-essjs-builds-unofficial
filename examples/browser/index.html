@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Essentia.js WASM BPM & Key Demo</title>
+  </head>
+  <body>
+    <main>
+      <h1>Essentia.js WASM Demo</h1>
+      <p>
+        This example loads <code>dist/essentia-wasm.web.js</code> and runs
+        <code>RhythmExtractor2013</code> and <code>KeyExtractor</code> on a short
+        audio snippet.
+      </p>
+      <audio id="player" controls></audio>
+      <pre id="log">Loading...</pre>
+    </main>
+    <script src="../../dist/essentia-wasm.web.js"></script>
+    <script type="module" src="./main.js"></script>
+  </body>
+</html>

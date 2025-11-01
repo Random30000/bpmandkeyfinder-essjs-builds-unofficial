@@ -1,0 +1,56 @@
+name: build-test
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container: emscripten/emsdk:3.1.58
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Set upstream ref fallback
+        run: echo "ESSENTIA_JS_REF=${{ vars.ESSENTIA_JS_REF || 'v22.08' }}" >> $GITHUB_ENV
+
+      - name: Print toolchain & ref
+        run: |
+          emcc -v || true
+          echo "ESSENTIA_JS_REF=$ESSENTIA_JS_REF"
+
+      - name: Bootstrap (fetch upstream + build min)
+        run: ./scripts/bootstrap.sh
+
+      - name: Install deps
+        run: npm ci
+
+      - name: Test
+        run: npm test
+
+      - name: Build (full) on default branch only
+        if: ${{ github.ref == format('refs/heads/{0}', github.event.repository.default_branch) && github.event_name == 'push' }}
+        run: ./scripts/build.sh full
+
+      - name: Hash & size
+        run: node tools/hash.js && node tools/size-report.js
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: wasm-bundles-${{ github.run_id }}
+          path: |
+            dist/**
+            build-info.json

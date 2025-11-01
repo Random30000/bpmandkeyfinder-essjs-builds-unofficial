@@ -1,0 +1,14 @@
+{
+  "upstreamRepository": "https://github.com/MTG/essentia.js",
+  "requestedRef": "master",
+  "resolvedCommit": "819c00e8f034dc709e3d330ed8ac9ed37dfdb767",
+  "generatedAt": "2025-11-01T13:22:58Z",
+  "emscriptenVersion": "unknown",
+  "toolchain": {
+    "emcc": "unknown",
+    "em++": "unknown",
+    "node": "unknown"
+  },
+  "repositoryCommit": "unknown",
+  "builds": {}
+}

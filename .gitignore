@@ -1,0 +1,44 @@
+# Build artifacts
+/dist/*
+!/dist/.gitkeep
+dist/
+*.wasm
+*.a
+*.o
+*.bc
+*.map
+*.zip
+*.tgz
+/vendor/
+/build/
+/out/
+
+# Example assets
+examples/audio/
+
+# Dependencies
+node_modules/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Editor
+.idea/
+.vscode/
+*.swp
+
+# Coverage / test
+coverage/
+*.lcov
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Misc
+.env
+.env.*
+*.tmp
