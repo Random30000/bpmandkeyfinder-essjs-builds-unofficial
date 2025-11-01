@@ -17,25 +17,33 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
+      - name: Make scripts executable
+        run: chmod +x scripts/*.sh
+
+      - name: Prepare container
+        run: |
+          apt-get update
+          apt-get install -y git ca-certificates curl >/dev/null
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          echo "GITHUB_WORKSPACE=$GITHUB_WORKSPACE"
+          emcc -v || true
+          which emcmake || true
 
       - name: Set upstream ref fallback
         run: echo "ESSENTIA_JS_REF=${{ vars.ESSENTIA_JS_REF || 'v22.08' }}" >> $GITHUB_ENV
 
       - name: Print toolchain & ref
         run: |
-          emcc -v || true
           echo "ESSENTIA_JS_REF=$ESSENTIA_JS_REF"
-
-      - name: Make scripts executable
-        run: chmod +x scripts/*.sh
 
       - name: Bootstrap (fetch upstream + build min)
         run: ./scripts/bootstrap.sh
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
 
       - name: Install deps
         run: npm ci || npm i --no-audit --no-fund
