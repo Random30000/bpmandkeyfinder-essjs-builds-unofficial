@@ -23,7 +23,7 @@ jobs:
           cache: 'npm'
 
       - name: Set upstream ref fallback
-        run: echo "ESSENTIA_JS_REF=${{ vars.ESSENTIA_JS_REF || 'v22.08' }}" >> $GITHUB_ENV
+        run: echo "ESSENTIA_JS_REF=${{ vars.ESSENTIA_JS_REF || 'main' }}" >> $GITHUB_ENV
 
       - name: Print toolchain & ref
         run: |
