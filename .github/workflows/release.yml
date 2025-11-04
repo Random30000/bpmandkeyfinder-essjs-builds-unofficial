@@ -3,7 +3,7 @@ name: release
 on:
   push:
     tags: ['v*']
-
+ 
 permissions:
   contents: write
 
@@ -14,33 +14,87 @@ concurrency:
 jobs:
   release:
     runs-on: ubuntu-latest
-    container: emscripten/emsdk:3.1.58
-
     steps:
       - uses: actions/checkout@v4
 
+      - name: Setup Emscripten
+        uses: mymindstorm/setup-emsdk@v14
+        with:
+          version: 3.1.58
+
+      - name: Setup conda (mamba)
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          auto-activate-base: true
+          channels: conda-forge
+          channel-priority: strict
+          use-mamba: true
+          miniforge-version: latest
+
+      - name: Install Essentia (conda-forge first, pip fallback)
+        shell: bash -l {0}
+        run: |
+          set -euo pipefail
+
+          conda env remove -n essenv >/dev/null 2>&1 || true
+
+          for PY in 3.9 3.10 3.8; do
+            echo "::group::conda-forge essentia on python=${PY}"
+            if mamba create -y -n essenv -c conda-forge "python=${PY}"; then
+              conda activate essenv
+              if mamba install -y -c conda-forge essentia; then
+                python - <<'PY'
+                import essentia, sys
+                print("essentia via conda OK", getattr(essentia, "__version__", "?"), "python", sys.version)
+                PY
+                echo "CONDA_ENV=essenv" >> "$GITHUB_ENV"
+                echo "::endgroup::"
+                exit 0
+              fi
+            fi
+            conda deactivate >/dev/null 2>&1 || true
+            conda env remove -n essenv >/dev/null 2>&1 || true
+            echo "::endgroup::"
+          done
+
+          echo "::group::pip fallback build"
+          mamba create -y -n essenv -c conda-forge python=3.10 cmake numpy cython pkg-config
+          conda activate essenv
+          sudo apt-get update
+          sudo apt-get install -y build-essential libfftw3-dev libsamplerate0-dev libyaml-dev \
+                               libavcodec-dev libavformat-dev libavutil-dev
+          python -m pip install -U pip setuptools wheel
+          pip install essentia
+          python - <<'PY'
+          import essentia, sys
+          print("essentia via pip OK", getattr(essentia, "__version__", "?"), "python", sys.version)
+          PY
+          echo "CONDA_ENV=essenv" >> "$GITHUB_ENV"
+          echo "::endgroup::"
+
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
-
-      - name: Set upstream ref fallback
-        run: echo "ESSENTIA_JS_REF=${{ vars.ESSENTIA_JS_REF || 'v22.08' }}" >> $GITHUB_ENV
+          node-version: 20
+          cache: npm
 
       - name: Make scripts executable
         run: chmod +x scripts/*.sh
 
-      - name: Bootstrap (fetch + build min)
-        run: ./scripts/bootstrap.sh
+      - name: Set upstream ref fallback
+        run: echo "ESSENTIA_JS_REF=${{ vars.ESSENTIA_JS_REF || 'main' }}" >> $GITHUB_ENV
 
-      - name: Install deps
-        run: npm ci || npm i --no-audit --no-fund
+      - name: Bootstrap (min)
+        shell: bash -l {0}
+        run: conda activate "$CONDA_ENV" && ./scripts/bootstrap.sh
 
-      - name: Test
-        run: npm test
+      - name: Install deps & Test
+        run: |
+          npm ci
+          npm test
 
       - name: Build full
-        run: ./scripts/build.sh full
+        shell: bash -l {0}
+        run: conda activate "$CONDA_ENV" && ./scripts/build.sh full
 
       - name: Hash & size
         run: node tools/hash.js && node tools/size-report.js
@@ -50,5 +104,6 @@ jobs:
         with:
           generate_release_notes: true
           files: |
-            dist/**
+            dist/*
+            SHA256SUMS.txt
             build-info.json

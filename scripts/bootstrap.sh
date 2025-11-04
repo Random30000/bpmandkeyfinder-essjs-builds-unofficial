@@ -5,8 +5,13 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 
 [ -f "$ROOT/toolchain.env" ] && . "$ROOT/toolchain.env"
 
-: "${ESSENTIA_JS_REF:=v22.08}"
+# Default to the upstream's primary branch when no override is provided.
+: "${ESSENTIA_JS_REF:=main}"
 : "${EMSDK_VERSION:=3.1.58}"
+
+# Cap emscripten parallelism for more predictable CI resource usage.
+export EMCC_CORES="${EMCC_CORES:-2}"
+export MAKEFLAGS="${MAKEFLAGS:--j2}"
 
 REF="$ESSENTIA_JS_REF"
 
