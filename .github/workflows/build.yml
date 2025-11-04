@@ -20,19 +20,26 @@ jobs:
         with:
           version: 3.1.58
 
-      - name: Setup conda with essentia
+      - name: Setup conda (mamba)
         uses: conda-incubator/setup-miniconda@v3
         with:
           auto-activate-base: true
-          python-version: '3.10'
           channels: conda-forge
           channel-priority: strict
-          activate-environment: essenv
           use-mamba: true
           miniforge-version: latest
-      - name: Install essentia (conda-forge)
+
+      - name: Create env (py39) & install essentia
         shell: bash -l {0}
-        run: mamba install -y -c conda-forge essentia
+        run: |
+          mamba create -n essenv -y python=3.9
+          conda activate essenv
+          mamba install -y -c conda-forge "essentia>=2.1,<2.2"
+          python - <<'PY'
+          import essentia, sys
+          print("essentia OK", essentia.__version__)
+          print("python", sys.executable)
+          PY
 
       - name: Setup Node
         uses: actions/setup-node@v4
